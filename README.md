@@ -3,7 +3,7 @@
   <h1>Axtra's Utils</h1>
   <p>Disable visual effects, auto-click key simulation, and force 16:9 in Geometry Dash.</p>
 
-  [![Build](https://github.com/Axtraa/remove-effect/actions/workflows/multi-platform.yml/badge.svg)](https://github.com/Axtraa/remove-effect/actions/workflows/multi-platform.yml)
+  [![Build](https://github.com/Axtraa/axtra-utils/actions/workflows/multi-platform.yml/badge.svg)](https://github.com/Axtraa/axtra-utils/actions/workflows/multi-platform.yml)
   [![Geode](https://img.shields.io/badge/Geode-5.7.1-blue)](https://geode-sdk.org)
   [![GD](https://img.shields.io/badge/Geometry%20Dash-2.2081-orange)](https://geometrydash.com)
 </div>
@@ -31,7 +31,7 @@
 
 ### Manual
 
-Download the latest `.geode` file from the [Releases](https://github.com/Axtraa/remove-effect/releases) page and drop it into your Geode mods folder (`geode/mods/`).
+Download the latest `.geode` file from the [Releases](https://github.com/Axtraa/axtra-utils/releases) page and drop it into your Geode mods folder (`geode/mods/`).
 
 ## Usage
 
@@ -91,4 +91,4 @@ git push
 
 ## License
 
-This project does not currently have a license. All rights reserved.
+[MIT](LICENSE) © 2026 Axtra

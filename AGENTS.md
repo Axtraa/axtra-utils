@@ -48,6 +48,7 @@ it is stored with `getSavedValue("auto-click-key", "F2")`.
   otherwise Android/iOS CI fails. `auto-click*` settings are declared `platforms: ["win","mac"]` in mod.json, so
   `Mod::hasSetting()` is false on mobile — never dereference a setting without that guard.
 - `_spr` resolves to `axtra.axtra-utils`; new resources must be listed in `mod.json` `resources`.
+- `CCNode::getID()` returns `geode::ZStringView`, not `std::string`: no `contains()` / string methods on it.
 - `PauseLayer`'s `right-button-menu` is a `ColumnLayout` with a fixed cross axis and
   `setCrossAxisOverflow(false)`. Items added to it must match the size of the vanilla entries (`pauseButtonSize()`
   measures them, `boxedPauseItem()` enforces it): a wider/taller one (long key names like `PageDown`) squishes the

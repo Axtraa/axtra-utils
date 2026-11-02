@@ -594,11 +594,10 @@ static CCNode* boxedPauseItem(CCNode* content, float boxSize) {
 }
 
 // Actual size of the vanilla entries in the menu; our items must match it or
-// the fixed-width column squishes everything.
+// the fixed-width column squishes everything. Called before ours are added.
 static float pauseButtonSize(CCNode* menu) {
     if (auto children = menu->getChildren()) {
         for (auto child : CCArrayExt<CCNode*>(children)) {
-            if (child->getID().contains("remove-effect")) continue;
             if (auto item = typeinfo_cast<CCMenuItem*>(child)) {
                 auto size = item->getScaledContentSize();
                 // min: wide entries (toggle labels) must not blow up the box

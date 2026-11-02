@@ -11,6 +11,7 @@
 #include <Geode/modify/CCCircleWave.hpp>
 #include <Geode/modify/PauseLayer.hpp>
 #include <Geode/ui/GeodeUI.hpp>
+#include <Geode/utils/cocos.hpp>
 
 #include <algorithm>
 
@@ -245,7 +246,12 @@ static void setKeyText(CCLabelBMFont* label, std::string const& name) {
 
     constexpr float maxScale = 0.55f;
     constexpr float minScale = 0.12f;
-    constexpr float maxWidth = PAUSE_BUTTON_SIZE - 6.f;
+
+    float maxWidth = PAUSE_BUTTON_SIZE - 6.f;
+    if (auto parent = label->getParent()) {
+        float boxWidth = parent->getContentWidth();
+        if (boxWidth > 0.f) maxWidth = boxWidth - 6.f;
+    }
 
     float width = label->getContentWidth();
     float scale = maxScale;
@@ -579,12 +585,29 @@ class $modify (CCCircleWave) {
 
 // Wraps a sprite in a fixed-size node so the pause menu column sees the same
 // footprint as the vanilla buttons regardless of the sprite's own size.
-static CCNode* boxedPauseItem(CCNode* content) {
+static CCNode* boxedPauseItem(CCNode* content, float boxSize) {
     auto box = CCNode::create();
-    box->setContentSize({PAUSE_BUTTON_SIZE, PAUSE_BUTTON_SIZE});
-    content->setPosition({PAUSE_BUTTON_SIZE / 2.f, PAUSE_BUTTON_SIZE / 2.f});
+    box->setContentSize({boxSize, boxSize});
+    content->setPosition({boxSize / 2.f, boxSize / 2.f});
     box->addChild(content);
     return box;
+}
+
+// Actual size of the vanilla entries in the menu; our items must match it or
+// the fixed-width column squishes everything.
+static float pauseButtonSize(CCNode* menu) {
+    if (auto children = menu->getChildren()) {
+        for (auto child : CCArrayExt<CCNode*>(children)) {
+            if (child->getID().contains("remove-effect")) continue;
+            if (auto item = typeinfo_cast<CCMenuItem*>(child)) {
+                auto size = item->getScaledContentSize();
+                // min: wide entries (toggle labels) must not blow up the box
+                float unit = std::min(size.width, size.height);
+                if (unit > 0.f) return unit;
+            }
+        }
+    }
+    return PAUSE_BUTTON_SIZE;
 }
 
 class $modify (RemoveEffectPauseLayer, PauseLayer) {
@@ -603,16 +626,18 @@ class $modify (RemoveEffectPauseLayer, PauseLayer) {
         auto menu = this->getChildByID("right-button-menu");
         if (!menu) return;
 
+        // Match the vanilla buttons so the column keeps its layout
+        float unit = pauseButtonSize(menu);
+
         // --- Settings button ---
         // Eclipse exposes the same toggles, so no need for a second entry point
         if (!axtra::eclipse_ui::available()) {
             auto btnSprite = CircleButtonSprite::create(
                 CCSprite::create("button.png"_spr)
             );
-            float spriteSize = std::max(btnSprite->getContentWidth(), btnSprite->getContentHeight());
-            if (spriteSize > 0.f) btnSprite->setScale(PAUSE_BUTTON_SIZE / spriteSize);
+            btnSprite->setScale(0.675f);
             auto settingsBtn = CCMenuItemSpriteExtra::create(
-                boxedPauseItem(btnSprite), this,
+                boxedPauseItem(btnSprite, unit), this,
                 menu_selector(RemoveEffectPauseLayer::onOpenSettings)
             );
             settingsBtn->setID("remove-effect-settings-btn"_spr);
@@ -623,12 +648,12 @@ class $modify (RemoveEffectPauseLayer, PauseLayer) {
         #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
             std::string curKey = Mod::get()->getSavedValue<std::string>("auto-click-key", "F2");
             auto keyLabel = CCLabelBMFont::create(curKey.c_str(), "goldFont.fnt");
-            setKeyText(keyLabel, curKey);
             m_fields->m_keyLabel = keyLabel;
             auto keyBtn = CCMenuItemSpriteExtra::create(
-                boxedPauseItem(keyLabel), this,
+                boxedPauseItem(keyLabel, unit), this,
                 menu_selector(RemoveEffectPauseLayer::onRecordKey)
             );
+            setKeyText(keyLabel, curKey);
             keyBtn->setID("remove-effect-record-key-btn"_spr);
             menu->addChild(keyBtn);
         #endif

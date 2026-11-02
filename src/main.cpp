@@ -12,9 +12,17 @@
 #include <Geode/modify/PauseLayer.hpp>
 #include <Geode/ui/GeodeUI.hpp>
 
+#include <algorithm>
+
 #include "eclipse_ui.hpp"
 
 using namespace geode::prelude;
+
+// The pause-menu buttons sit in a fixed-width column that shares its content
+// size between every child, so our items must keep the same footprint as the
+// vanilla ones. A wider entry (long key names like "PageDown") makes the
+// layout squish the whole column and the buttons end up bunched at the top.
+static constexpr float PAUSE_BUTTON_SIZE = 40.f;
 
 #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
 // ============================================================
@@ -229,10 +237,28 @@ static void simulateKeyRelease(int vkCode) {
 //  Key Record Layer  –  press a key to bind it
 // ============================================================
 
+// Re-fit the label every time the binding changes, otherwise the text spills
+// out of the pause menu column.
+static void setKeyText(CCLabelBMFont* label, std::string const& name) {
+    if (!label) return;
+    label->setString(name.c_str());
+
+    constexpr float maxScale = 0.55f;
+    constexpr float minScale = 0.12f;
+    constexpr float maxWidth = PAUSE_BUTTON_SIZE - 6.f;
+
+    float width = label->getContentWidth();
+    float scale = maxScale;
+    if (width > 0.f && width * scale > maxWidth) {
+        scale = std::clamp(maxWidth / width, minScale, maxScale);
+    }
+    label->setScale(scale);
+}
+
 // Store the new binding and reflect it in every UI showing it
 static void applyAutoClickKey(std::string const& name, CCLabelBMFont* keyLabel) {
     Mod::get()->setSavedValue("auto-click-key", name);
-    if (keyLabel) keyLabel->setString(name.c_str());
+    setKeyText(keyLabel, name);
     axtra::eclipse_ui::updateKeyLabel(name);
 }
 
@@ -551,6 +577,16 @@ class $modify (CCCircleWave) {
 //  PauseLayer  –  settings button + key-record button
 // ============================================================
 
+// Wraps a sprite in a fixed-size node so the pause menu column sees the same
+// footprint as the vanilla buttons regardless of the sprite's own size.
+static CCNode* boxedPauseItem(CCNode* content) {
+    auto box = CCNode::create();
+    box->setContentSize({PAUSE_BUTTON_SIZE, PAUSE_BUTTON_SIZE});
+    content->setPosition({PAUSE_BUTTON_SIZE / 2.f, PAUSE_BUTTON_SIZE / 2.f});
+    box->addChild(content);
+    return box;
+}
+
 class $modify (RemoveEffectPauseLayer, PauseLayer) {
     struct Fields {
         #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
@@ -573,9 +609,10 @@ class $modify (RemoveEffectPauseLayer, PauseLayer) {
             auto btnSprite = CircleButtonSprite::create(
                 CCSprite::create("button.png"_spr)
             );
-            btnSprite->setScale(0.675f);
+            float spriteSize = std::max(btnSprite->getContentWidth(), btnSprite->getContentHeight());
+            if (spriteSize > 0.f) btnSprite->setScale(PAUSE_BUTTON_SIZE / spriteSize);
             auto settingsBtn = CCMenuItemSpriteExtra::create(
-                btnSprite, this,
+                boxedPauseItem(btnSprite), this,
                 menu_selector(RemoveEffectPauseLayer::onOpenSettings)
             );
             settingsBtn->setID("remove-effect-settings-btn"_spr);
@@ -586,10 +623,10 @@ class $modify (RemoveEffectPauseLayer, PauseLayer) {
         #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
             std::string curKey = Mod::get()->getSavedValue<std::string>("auto-click-key", "F2");
             auto keyLabel = CCLabelBMFont::create(curKey.c_str(), "goldFont.fnt");
-            keyLabel->setScale(0.55f);
+            setKeyText(keyLabel, curKey);
             m_fields->m_keyLabel = keyLabel;
             auto keyBtn = CCMenuItemSpriteExtra::create(
-                keyLabel, this,
+                boxedPauseItem(keyLabel), this,
                 menu_selector(RemoveEffectPauseLayer::onRecordKey)
             );
             keyBtn->setID("remove-effect-record-key-btn"_spr);

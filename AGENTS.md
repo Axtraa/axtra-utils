@@ -46,6 +46,10 @@ it is stored with `getSavedValue("auto-click-key", "F2")`.
   otherwise Android/iOS CI fails. `auto-click*` settings are declared `platforms: ["win","mac"]` in mod.json, so
   `Mod::hasSetting()` is false on mobile — never dereference a setting without that guard.
 - `_spr` resolves to `axtra.axtra-utils`; new resources must be listed in `mod.json` `resources`.
+- `PauseLayer`'s `right-button-menu` is a `ColumnLayout` with a fixed 40 px cross axis and
+  `setCrossAxisOverflow(false)`. Items added to it must keep that footprint: a wider one (long key names like
+  `PageDown`) squishes the whole column and the buttons bunch at the top. `boxedPauseItem()` enforces it, and
+  `setKeyText()` re-fits the label whenever the binding changes.
 
 ## Eclipse integration (`src/eclipse_ui.cpp`)
 

@@ -59,5 +59,10 @@ Runtime-only: nothing links against Eclipse, and every path is a no-op when it i
 - Public API bug: `MenuTab::addInputFloat(id, title, …)` swaps id/title — pass the same string for both or the label
   shows the config key.
 - `addModSettingToggle()` dereferences the setting; guard with `Mod::hasSetting(key)`.
-- The pause-menu gear button is skipped when `eclipse_ui::available()`; the Record Key button stays (Eclipse has no
-  key-recording component). Recording calls `applyAutoClickKey()`, which updates both labels.
+- The pause-menu gear button is skipped when `eclipse_ui::available()`; the Record Key button stays. Recording calls
+  `applyAutoClickKey()`, which updates both labels.
+- The public API has no keybind component: `ComponentType` is only `Label/Toggle/Button/InputFloat` and the vtable has
+  no `CreateKeybind` (checked on upstream `main`). Do not try a `CCLayer` picker from the tab either — Eclipse renders
+  in ImGui on desktop, so a scene overlay ends up behind the menu.
+- Toggles still get keybinds for free: `addModSettingToggle` → `CreateToggle` → `handleKeybinds()`, so users can bind
+  every feature from Eclipse's *Keybinds* tab. Only the simulated key needs the pause-menu recorder.

@@ -8,6 +8,8 @@ when Eclipse is installed.
 
 There are no tests, linters or formatters. **The only real verification is the CI build.**
 
+- Push every change to `origin/main` right after committing: CI is the only check, so a local commit that is never
+  pushed is unverified.
 - Push to any branch → `.github/workflows/multi-platform.yml` builds Windows, macOS, iOS, Android32/64 via
   `geode-sdk/build-geode-mod@main`. Artifacts only; no release/publish step.
 - Local build needs `GEODE_SDK` set (CMake `FATAL_ERROR`s without it):

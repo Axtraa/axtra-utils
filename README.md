@@ -48,8 +48,8 @@ All settings can also be accessed from the Geode mod settings menu.
 
 When [Eclipse Menu](https://geode-sdk.org/mods/eclipse.eclipse-menu) is installed, every feature shows up in its own
 **Axtra's Utils** tab inside the Eclipse UI. Toggles and value inputs are synced both ways with the
-mod's Geode settings, so either interface controls the same state. The pause menu gear icon is hidden in
-that case (the key recorder button stays, as Eclipse has no key recording UI).
+mod's Geode settings, so either interface controls the same state. The pause menu gear icon and key label are hidden
+in that case, since the tab already exposes the exact same state.
 
 ## Platforms
 

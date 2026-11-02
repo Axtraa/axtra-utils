@@ -644,7 +644,10 @@ class $modify (RemoveEffectPauseLayer, PauseLayer) {
         }
 
         // --- Record Key button ---
+        // Hidden when Eclipse is loaded: the current key is shown in the Eclipse
+        // tab, and the pause menu entry only adds a duplicate to keep in sync.
         #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
+        if (!axtra::eclipse_ui::available()) {
             std::string curKey = Mod::get()->getSavedValue<std::string>("auto-click-key", "F2");
             auto keyLabel = CCLabelBMFont::create(curKey.c_str(), "goldFont.fnt");
             m_fields->m_keyLabel = keyLabel;
@@ -655,6 +658,7 @@ class $modify (RemoveEffectPauseLayer, PauseLayer) {
             setKeyText(keyLabel, curKey);
             keyBtn->setID("remove-effect-record-key-btn"_spr);
             menu->addChild(keyBtn);
+        }
         #endif
 
         menu->updateLayout();

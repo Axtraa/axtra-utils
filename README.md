@@ -14,7 +14,7 @@
 
 | Feature | Description |
 |---------|-------------|
-| **Auto Click** | Simulate a key press at a configurable percentage (mute Discord, etc.) with interactive key recording |
+| **Auto Click** | Simulate a key press at a configurable percentage (mute Discord, etc.), bound to any key or chord through a native Geode keybind |
 | **No Orb Pulse** | Disables the pulsing effect on orbs — cleaner gameplay visuals |
 | **Orb Pulse Size** | Fine-tune the orb pulse size when not fully disabled |
 | **No Circles** | Removes all circle wave effects during gameplay |
@@ -40,7 +40,7 @@ Download the latest `.geode` file from the [Releases](https://github.com/Axtraa/
 3. Press **Pause** during gameplay
 4. Click the **gear icon** in the pause menu (bottom-right) to open settings
 5. Toggle features on/off
-6. Click the **key label** to record a new key for Auto Click
+6. Pick the **Auto Click Key** binding in the same settings page (or in Geode's *Keybinds* popup)
 
 All settings can also be accessed from the Geode mod settings menu.
 
@@ -48,8 +48,9 @@ All settings can also be accessed from the Geode mod settings menu.
 
 When [Eclipse Menu](https://geode-sdk.org/mods/eclipse.eclipse-menu) is installed, every feature shows up in its own
 **Axtra's Utils** tab inside the Eclipse UI. Toggles and value inputs are synced both ways with the
-mod's Geode settings, so either interface controls the same state. The pause menu gear icon and key label are hidden
-in that case, since the tab already exposes the exact same state.
+mod's Geode settings, so either interface controls the same state. The pause menu gear icon is hidden in that case,
+since the tab already exposes the same toggles. The auto-click key stays a native Geode keybind, so it remains
+editable from the mod's settings page even when Eclipse is installed.
 
 ## Platforms
 

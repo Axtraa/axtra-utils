@@ -26,12 +26,14 @@ There are no tests, linters or formatters. **The only real verification is the C
 
 | Path | Role |
 |---|---|
-| `src/main.cpp` | All gameplay: `$modify` of `PlayLayer`, `CCCircleWave`, `PauseLayer`, plus `KeyRecordLayer` |
+| `src/main.cpp` | All gameplay: `$modify` of `PlayLayer`, `CCCircleWave`, `PauseLayer`, plus desktop key simulation |
 | `src/eclipse_ui.cpp/.hpp` | Optional Eclipse integration; own `MenuLayer::init` hook |
 | `src/eclipse-api/` | Verbatim vendored Eclipse public headers (EPL-2.0). Never edit; re-copy the whole `include/` dir |
 
-Settings live in `mod.json` and stay the single source of truth. The recorded auto-click key is **not** a setting:
-it is stored with `getSavedValue("auto-click-key", "F2")`.
+Settings live in `mod.json` and stay the single source of truth. `auto-click-key` is a native `keybind` setting
+(desktop only), read with `Mod::get()->getSettingValue<std::vector<Keybind>>(...)` — the first entry is the binding
+that gets simulated. Geode's `enumKeyCodes` uses the Windows Virtual-Key values on every platform, so
+`static_cast<int>(bind.key)` goes straight into the simulation; macOS only needs the existing `vkToMacKey` table.
 
 ## GD / Geode gotchas (bitten before)
 
@@ -52,7 +54,7 @@ it is stored with `getSavedValue("auto-click-key", "F2")`.
 - `PauseLayer`'s `right-button-menu` is a `ColumnLayout` with a fixed cross axis and
   `setCrossAxisOverflow(false)`. Items added to it must match the size of the vanilla entries (`pauseButtonSize()`
   measures them, `boxedPauseItem()` enforces it): a wider/taller one (long key names like `PageDown`) squishes the
-  whole column and the buttons bunch at the top. `setKeyText()` re-fits the label whenever the binding changes.
+  whole column and the buttons bunch at the top.
 
 ## Eclipse integration (`src/eclipse_ui.cpp`)
 
@@ -66,10 +68,11 @@ Runtime-only: nothing links against Eclipse, and every path is a no-op when it i
 - Public API bug: `MenuTab::addInputFloat(id, title, …)` swaps id/title — pass the same string for both or the label
   shows the config key.
 - `addModSettingToggle()` dereferences the setting; guard with `Mod::hasSetting(key)`.
-- The pause-menu gear button and key recorder are skipped when `eclipse_ui::available()`; the Eclipse tab shows the
-  same state. Recording calls `applyAutoClickKey()`, which updates the Eclipse label (and the pause label when present).
+- The pause-menu gear button is skipped when `eclipse_ui::available()`; the Eclipse tab shows the same state. The
+  label there is built from the keybind setting and refreshed by `listenForSettingChanges<std::vector<Keybind>>`.
 - The public API has no keybind component: `ComponentType` is only `Label/Toggle/Button/InputFloat` and the vtable has
   no `CreateKeybind` (checked on upstream `main`). Do not try a `CCLayer` picker from the tab either — Eclipse renders
   in ImGui on desktop, so a scene overlay ends up behind the menu.
 - Toggles still get keybinds for free: `addModSettingToggle` → `CreateToggle` → `handleKeybinds()`, so users can bind
-  every feature from Eclipse's *Keybinds* tab. Only the simulated key needs the pause-menu recorder.
+  every feature from Eclipse's *Keybinds* tab. The simulated key is a Geode keybind setting, so it stays editable from
+  the mod settings page with Eclipse installed.

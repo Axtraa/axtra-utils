@@ -32,6 +32,14 @@
       "default": false,
       "platforms": ["win", "mac"]
     },
+    "auto-click-key": {
+      "type": "keybind",
+      "name": "Auto Click Key",
+      "description": "Key simulated when the trigger percentage is reached",
+      "default": "F2",
+      "category": "gameplay",
+      "platforms": ["win", "mac"]
+    },
     "auto-click-percent": {
       "type": "float",
       "name": "Trigger Percent",

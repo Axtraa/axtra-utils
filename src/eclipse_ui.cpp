@@ -1,10 +1,12 @@
 #include <Geode/Geode.hpp>
 #include <Geode/loader/SettingV3.hpp>
 #include <Geode/modify/MenuLayer.hpp>
+#include <Geode/utils/Keyboard.hpp>
 
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "eclipse-api/components.hpp"
 #include "eclipse_ui.hpp"
@@ -16,9 +18,18 @@ namespace axtra::eclipse_ui {
         constexpr std::string_view ECLIPSE_MOD_ID = "eclipse.eclipse-menu";
         constexpr std::string_view TAB_NAME = "Axtra's Utils";
 
-        // Must match the key used by the recorder in main.cpp
+        // Must match the key used by the auto-click hook in main.cpp
         #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
-            constexpr std::string_view KEY_SAVED_VALUE = "auto-click-key";
+            constexpr std::string_view KEY_SETTING = "auto-click-key";
+
+            std::string autoClickKeyText() {
+                auto mod = Mod::get();
+                if (!mod->hasSetting(KEY_SETTING)) return "None";
+
+                auto binds = mod->getSettingValue<std::vector<Keybind>>(KEY_SETTING);
+                if (binds.empty()) return "None";
+                return binds.front().toString();
+            }
         #endif
 
         bool s_registered = false;
@@ -80,11 +91,21 @@ namespace axtra::eclipse_ui {
             addSettingToggle(tab, "auto-click");
             addSettingFloat(tab, "auto-click-percent", 0.f, 100.f, "%.1f");
 
-            // Key recording is a desktop-only feature and lives in the pause menu
+            // The keybind setting is desktop-only; read its current value so the
+            // label always shows what the gameplay hook will simulate.
             #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
-                s_keyLabel = tab.addLabel(
-                    "Key: " + Mod::get()->getSavedValue<std::string>(std::string(KEY_SAVED_VALUE), "F2")
-                );
+                if (Mod::get()->hasSetting(KEY_SETTING)) {
+                    s_keyLabel = tab.addLabel("Key: " + autoClickKeyText());
+
+                    geode::listenForSettingChanges<std::vector<Keybind>>(
+                        std::string(KEY_SETTING),
+                        [](std::vector<Keybind> const& binds) {
+                            if (binds.empty()) return;
+                            updateKeyLabel(binds.front().toString());
+                        },
+                        Mod::get()
+                    );
+                }
             #endif
 
             addSettingToggle(tab, "no-orb-pulse");

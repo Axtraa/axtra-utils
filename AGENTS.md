@@ -13,8 +13,12 @@ There are no tests, linters or formatters. **The only real verification is the C
 - Local build needs `GEODE_SDK` set (CMake `FATAL_ERROR`s without it):
   `cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build`
 - `CMakeLists.txt` GLOBs `src/*.cpp`; new files are picked up, but re-run configure if a build seems to ignore one.
-- Do not touch the pinned bindings logic in `CMakeLists.txt` (`BINDINGS_COMMIT`, forced `GEODE_BINDINGS_REPO_PATH`).
-  Newer bindings break Broma parsing / iOS codegen. Don't copy EclipseMenu's build config or mod.json either.
+- Bindings are cloned by Geode from `geode-sdk/bindings@main` at configure time, so builds are **not reproducible**: an
+  upstream bindings/codegen change can break CI with no local diff. Pinning by bare SHA does not work (GitHub rejects
+  unadvertised objects; the fetch just falls back to the default).
+- iOS only: codegen emits definitions for the standalone FMOD C API into `GeneratedSource.cpp` without the FMOD
+  headers. `CMakeLists.txt` force-includes `fmod.hpp` on the `GeodeBindings` target — keep it (or an equivalent
+  patch) or iOS dies on `unknown type name 'FMOD_RESULT'`.
 
 ## Layout
 

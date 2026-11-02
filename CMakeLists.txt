@@ -19,35 +19,18 @@ else()
     message(STATUS "Found Geode: $ENV{GEODE_SDK}")
 endif()
 
-# Use a working bindings commit (HEAD~1 fixes Broma parse error: /// inside class body)
-set(BINDINGS_COMMIT "31bd965a")
-set(BINDINGS_CLONE_PATH "${CMAKE_CURRENT_BINARY_DIR}/bindings-src")
-if (NOT EXISTS "${BINDINGS_CLONE_PATH}/.git")
-    file(MAKE_DIRECTORY "${BINDINGS_CLONE_PATH}")
-    execute_process(
-        COMMAND git init
-        WORKING_DIRECTORY "${BINDINGS_CLONE_PATH}"
-        OUTPUT_QUIET ERROR_QUIET
-    )
-    execute_process(
-        COMMAND git fetch --depth=1 https://github.com/geode-sdk/bindings.git ${BINDINGS_COMMIT}
-        WORKING_DIRECTORY "${BINDINGS_CLONE_PATH}"
-        OUTPUT_QUIET ERROR_QUIET
-    )
-    execute_process(
-        COMMAND git checkout FETCH_HEAD
-        WORKING_DIRECTORY "${BINDINGS_CLONE_PATH}"
-        OUTPUT_QUIET ERROR_QUIET
-    )
-endif()
-if (EXISTS "${BINDINGS_CLONE_PATH}/bindings/2.2081/GeometryDash.bro")
-    set(ENV{GEODE_BINDINGS_REPO_PATH} "${BINDINGS_CLONE_PATH}")
-    set(GEODE_BINDINGS_REPO_PATH "${BINDINGS_CLONE_PATH}" CACHE PATH "Working bindings" FORCE)
-    message(STATUS "Using pinned bindings commit ${BINDINGS_COMMIT}")
-else()
-    message(WARNING "Failed to clone bindings, will use default (may fail)")
-endif()
-
+# Bindings come from Geode's own CPM clone of geode-sdk/bindings@main.
+# Do not try to pin them by fetching a bare SHA: GitHub rejects fetches of
+# unadvertised objects, so such a step silently falls back to the default.
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
+
+# Upstream iOS codegen bug: the FMOD free functions are declared with `ios 0x...`
+# addresses in FMOD.bro, so codegen emits their definitions into
+# GeneratedSource.cpp — but that file never includes the FMOD headers, and the
+# build dies on "unknown type name 'FMOD_RESULT'". Force-include them for the
+# bindings target (no-op on the platforms that do not generate that code).
+if (("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS" OR IOS) AND TARGET GeodeBindings)
+    target_compile_options(GeodeBindings PRIVATE "-include" "fmod.hpp")
+endif()
 
 setup_geode_mod(${PROJECT_NAME})

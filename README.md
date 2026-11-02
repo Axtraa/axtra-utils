@@ -44,6 +44,13 @@ Download the latest `.geode` file from the [Releases](https://github.com/Axtraa/
 
 All settings can also be accessed from the Geode mod settings menu.
 
+### Eclipse Menu integration
+
+When [Eclipse Menu](https://geode-sdk.org/mods/eclipse.eclipse-menu) is installed, every feature shows up in its own
+**Axtra's Utils** tab inside the Eclipse UI. Toggles and value inputs are synced both ways with the
+mod's Geode settings, so either interface controls the same state. The pause menu gear icon is hidden in
+that case (the key recorder button stays, as Eclipse has no key recording UI).
+
 ## Platforms
 
 | Platform | Status |
@@ -80,6 +87,7 @@ git push
 
 - [Geode SDK](https://geode-sdk.org) ≥ 5.7.1
 - [geode.node-ids](https://geode-sdk.org/mods/geode.node-ids) ≥ 1.20.0
+- [Eclipse Menu](https://geode-sdk.org/mods/eclipse.eclipse-menu) — optional, only used to display the features in its UI
 
 ## License
 

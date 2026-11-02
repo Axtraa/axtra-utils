@@ -12,6 +12,8 @@
 #include <Geode/modify/PauseLayer.hpp>
 #include <Geode/ui/GeodeUI.hpp>
 
+#include "eclipse_ui.hpp"
+
 using namespace geode::prelude;
 
 #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
@@ -227,6 +229,13 @@ static void simulateKeyRelease(int vkCode) {
 //  Key Record Layer  –  press a key to bind it
 // ============================================================
 
+// Store the new binding and reflect it in every UI showing it
+static void applyAutoClickKey(std::string const& name, CCLabelBMFont* keyLabel) {
+    Mod::get()->setSavedValue("auto-click-key", name);
+    if (keyLabel) keyLabel->setString(name.c_str());
+    axtra::eclipse_ui::updateKeyLabel(name);
+}
+
 class KeyRecordLayer : public CCLayerColor {
 protected:
     CCLabelBMFont* m_keyLabel = nullptr;
@@ -302,8 +311,7 @@ protected:
                 if (down && !m_prevState[k]) {
                     std::string name = keyNameFromVK(k);
                     if (!name.empty()) {
-                        Mod::get()->setSavedValue("auto-click-key", name);
-                        if (m_keyLabel) m_keyLabel->setString(name.c_str());
+                        applyAutoClickKey(name, m_keyLabel);
                         removeFromParentAndCleanup(true);
                         return;
                     }
@@ -338,8 +346,7 @@ protected:
                     if (vk != 0) {
                         std::string name = keyNameFromVK(vk);
                         if (!name.empty()) {
-                            Mod::get()->setSavedValue("auto-click-key", name);
-                            if (m_keyLabel) m_keyLabel->setString(name.c_str());
+                            applyAutoClickKey(name, m_keyLabel);
                             removeFromParentAndCleanup(true);
                             return;
                         }
@@ -554,20 +561,26 @@ class $modify (RemoveEffectPauseLayer, PauseLayer) {
     void customSetup() {
         PauseLayer::customSetup();
 
+        // Make sure the Eclipse tab exists before deciding which button to show
+        axtra::eclipse_ui::registerComponents();
+
         auto menu = this->getChildByID("right-button-menu");
         if (!menu) return;
 
         // --- Settings button ---
-        auto btnSprite = CircleButtonSprite::create(
-            CCSprite::create("button.png"_spr)
-        );
-        btnSprite->setScale(0.675f);
-        auto settingsBtn = CCMenuItemSpriteExtra::create(
-            btnSprite, this,
-            menu_selector(RemoveEffectPauseLayer::onOpenSettings)
-        );
-        settingsBtn->setID("remove-effect-settings-btn"_spr);
-        menu->addChild(settingsBtn);
+        // Eclipse exposes the same toggles, so no need for a second entry point
+        if (!axtra::eclipse_ui::available()) {
+            auto btnSprite = CircleButtonSprite::create(
+                CCSprite::create("button.png"_spr)
+            );
+            btnSprite->setScale(0.675f);
+            auto settingsBtn = CCMenuItemSpriteExtra::create(
+                btnSprite, this,
+                menu_selector(RemoveEffectPauseLayer::onOpenSettings)
+            );
+            settingsBtn->setID("remove-effect-settings-btn"_spr);
+            menu->addChild(settingsBtn);
+        }
 
         // --- Record Key button ---
         #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)

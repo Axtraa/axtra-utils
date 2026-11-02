@@ -17,7 +17,10 @@ remove-effect/
 ├── resources/                # Static assets
 │   └── button.png            # Pause menu button sprite
 ├── src/
-│   └── main.cpp              # All mod logic (single file, ~595 lines)
+│   ├── main.cpp              # Mod logic (features, hooks, pause menu, key recorder)
+│   ├── eclipse_ui.cpp        # Registers the features in Eclipse Menu when present
+│   ├── eclipse_ui.hpp        # Bridge API used by main.cpp
+│   └── eclipse-api/          # Vendored Eclipse Menu public API (header-only)
 ├── CMakeLists.txt            # Build config (CMake 3.21+, C++23, Geode SDK bindings pinning)
 ├── mod.json                  # Geode mod manifest — settings, metadata, dependencies
 ├── changelog.md              # Version changelog
@@ -79,6 +82,16 @@ remove-effect/
 - **macOS**: `CGEventCreateKeyboardEvent()` with Mac key code mapping via `vkToMacKey()`
 - Key is held for 100ms (time-based via `dt`, not frame-based)
 
+## ECLIPSE INTEGRATION (`src/eclipse_ui.cpp`)
+
+Optional, runtime-only integration: nothing links against Eclipse, and all code paths stay no-ops when it is absent.
+
+- **API**: `src/eclipse-api/` is a verbatim copy of EclipseMenu's public `include/` headers (EPL-2.0, header-only, dispatch through a Geode event). Refresh the copy from the EclipseMenu repository when its `API_VERSION` bumps — never edit it in place.
+- **Detection**: `Loader::get()->isModLoaded("eclipse.eclipse-menu")`. Do NOT call the API at mod load: Eclipse may load after this mod. Registration is retried from a `MenuLayer::init` hook until the vtable answers (`getVTable()` is retried internally until a listener returns `Stop`).
+- **Registration**: one `MenuTab` named `Axtra's Utils`, filled with `addModSettingToggle()` (bools) and `addInputFloat()` (floats). Geode settings stay the single source of truth; Eclipse only gets a session copy seeded with `eclipse::config::set()` and refreshed via `listenForSettingChanges`.
+- **Pause menu**: the gear button is skipped when `eclipse_ui::available()` (Eclipse already exposes the same toggles). The Record Key button stays on desktop — Eclipse's public API has no key-recording component.
+- **Key label**: `KeyRecordLayer` calls `axtra::eclipse_ui::updateKeyLabel()` so the Eclipse label follows the recorded key.
+
 ## SETTINGS (mod.json)
 
 | Key | Type | Default | Description |
@@ -112,3 +125,5 @@ remove-effect/
 - `ApplicationServices.h` on macOS causes `CommentType` conflict with Geode bindings — use `CoreGraphics/CoreGraphics.h` instead
 - `destroyPlayer` requires `(PlayerObject*, GameObject*)` arguments — not zero-arg
 - Auto-click is disabled on mobile (iOS/Android) — no keyboard API available
+- Eclipse's public API swaps the `id` and `title` arguments of `addInputFloat()` — pass the same string for both, or the label shows the config key
+- Eclipse's `addModSettingToggle()` dereferences the setting — guard with `Mod::hasSetting(key)` (desktop-only settings are missing on mobile)

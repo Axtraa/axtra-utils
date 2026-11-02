@@ -17,6 +17,8 @@ A Geometry Dash mod that disables visual effects, provides auto-click key simula
 
 All features can be toggled on/off in the mod settings menu in-game, accessible via the pause menu button.
 
+If **Eclipse Menu** is installed, the same features are also available in an "Axtra's Utils" tab inside the Eclipse UI (both interfaces stay in sync). The pause menu settings button is then hidden, while the key recorder button remains since Eclipse has no key recording UI.
+
 ## Platform Support
 
 - **Windows**: Full support (auto-click + key recording)

@@ -1,3 +1,8 @@
+# Unreleased
+
+- **Eclipse Menu integration** — when Eclipse Menu is installed, all features are exposed in an "Axtra's Utils" tab with two-way sync to the Geode settings
+- Pause menu gear button is hidden while the Eclipse UI is available (key recorder stays)
+
 # 1.0.0
 
 - Initial Release

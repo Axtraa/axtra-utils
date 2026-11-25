@@ -1,4 +1,4 @@
-# Unreleased
+# 1.1.0
 
 - Support **Geode 6.0.0** and **Geometry Dash 2.2091** (2.2081 is no longer supported)
 - **Eclipse Menu integration** — when Eclipse Menu is installed, all features are exposed in an "Axtra's Utils" tab with two-way sync to the Geode settings

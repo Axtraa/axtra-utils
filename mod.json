@@ -8,7 +8,7 @@
   },
   "id": "axtra.axtra-utils",
   "name": "Axtra's Utils",
-  "version": "v1.0.0",
+  "version": "v1.1.0",
   "developer": "Axtra",
   "description": "Disable visual effects, auto-click key simulation, and force 16:9 in Geometry Dash.",
   "dependencies": {

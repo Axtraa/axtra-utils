@@ -1,5 +1,6 @@
 # Unreleased
 
+- Support **Geode 6.0.0** and **Geometry Dash 2.2091** (2.2081 is no longer supported)
 - **Eclipse Menu integration** — when Eclipse Menu is installed, all features are exposed in an "Axtra's Utils" tab with two-way sync to the Geode settings
 - Pause menu gear button is hidden while the Eclipse UI is available
 - **Auto Click Key is now a native Geode keybind setting** (chords supported), replacing the pause menu key recorder; it stays editable with Eclipse installed

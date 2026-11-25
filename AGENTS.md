@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Geode mod for Geometry Dash 2.2081 (Geode 5.7.1, C++23, MIT). Suppresses orb-pulse/circle VFX, simulates a
+Geode mod for Geometry Dash 2.2091 (Geode 6.0.0, C++23, MIT). Suppresses orb-pulse/circle VFX, simulates a
 keypress at a level percentage (desktop), forces a 16:9 letterbox, and mirrors all of it into Eclipse Menu's UI
 when Eclipse is installed.
 

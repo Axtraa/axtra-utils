@@ -3,9 +3,14 @@
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/utils/Keyboard.hpp>
 
+// Geode v6 dropped its <filesystem> includes (it uses asp::fs now), but the
+// vendored Eclipse API still declares std::filesystem::path in its vtable.
+#include <filesystem>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "eclipse-api/components.hpp"

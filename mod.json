@@ -1,10 +1,10 @@
 {
-  "geode": "5.7.1",
+  "geode": "6.0.0",
   "gd": {
-    "win": "2.2081",
-    "android": "2.2081",
-    "mac": "2.2081",
-    "ios": "2.2081"
+    "win": "2.2091",
+    "android": "2.2091",
+    "mac": "2.2091",
+    "ios": "2.2091"
   },
   "id": "axtra.axtra-utils",
   "name": "Axtra's Utils",
@@ -12,7 +12,7 @@
   "developer": "Axtra",
   "description": "Disable visual effects, auto-click key simulation, and force 16:9 in Geometry Dash.",
   "dependencies": {
-    "geode.node-ids": ">=v1.20.0"
+    "geode.node-ids": ">=v1.24.0-beta.1"
   },
   "resources": {
     "sprites": [

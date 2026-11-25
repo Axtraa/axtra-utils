@@ -15,6 +15,7 @@
 #include <Geode/utils/Keyboard.hpp>
 
 #include <algorithm>
+#include <cmath>
 #include <optional>
 #include <string>
 #include <vector>

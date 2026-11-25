@@ -4,8 +4,8 @@
   <p>Disable visual effects, auto-click key simulation, and force 16:9 in Geometry Dash.</p>
 
   [![Build](https://github.com/Axtraa/axtra-utils/actions/workflows/multi-platform.yml/badge.svg)](https://github.com/Axtraa/axtra-utils/actions/workflows/multi-platform.yml)
-  [![Geode](https://img.shields.io/badge/Geode-5.7.1-blue)](https://geode-sdk.org)
-  [![GD](https://img.shields.io/badge/Geometry%20Dash-2.2081-orange)](https://geometrydash.com)
+  [![Geode](https://img.shields.io/badge/Geode-6.0.0-blue)](https://geode-sdk.org)
+  [![GD](https://img.shields.io/badge/Geometry%20Dash-2.2091-orange)](https://geometrydash.com)
 </div>
 
 ---
@@ -86,8 +86,8 @@ git push
 
 ## Dependencies
 
-- [Geode SDK](https://geode-sdk.org) ≥ 5.7.1
-- [geode.node-ids](https://geode-sdk.org/mods/geode.node-ids) ≥ 1.20.0
+- [Geode SDK](https://geode-sdk.org) ≥ 6.0.0
+- [geode.node-ids](https://geode-sdk.org/mods/geode.node-ids) ≥ 1.24.0-beta.1
 - [Eclipse Menu](https://geode-sdk.org/mods/eclipse.eclipse-menu) — optional, only used to display the features in its UI
 
 ## License
